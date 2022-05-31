@@ -7,16 +7,16 @@ import { client } from "../util/pokemon-client";
 import { FixedSizeList } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { Box, Center, Grid, GridItem, Text } from "@chakra-ui/react";
-import backupPokemon from "../data/pokemon.json";
+// import backupPokemon from "../data/pokemon.json";
 
 export const getStaticProps = async () => {
-  // const fetchAllPokemon = Array.from({ length: 151 }).map((_, idx) =>
-  //   client.getPokemonById(idx + 1)
-  // );
+  const fetchAllPokemon = Array.from({ length: 151 }).map((_, idx) =>
+    client.getPokemonById(idx + 1)
+  );
 
-  // const pokemon = await Promise.all(fetchAllPokemon);
+  const pokemon = await Promise.all(fetchAllPokemon);
 
-  const pokemon = (backupPokemon as any).data;
+  // const pokemon = (backupPokemon as any).data;
 
   return {
     props: {
@@ -38,62 +38,72 @@ const PokemonRow = ({
 
   return (
     <div style={{ ...style, height: "100%" }} className={styles.list}>
-      <GridItem colSpan={6} rowSpan={1} bg="gray.800" borderRadius="5px">
-        <Center height="100%">#{pokemon.id}</Center>
-      </GridItem>
-      <GridItem
-        colSpan={6}
-        rowSpan={1}
-        bg="gray.800"
-        borderRadius="5px"
-        textAlign="center"
+      <Grid
+        templateColumns="repeat(36, 1fr)"
+        templateRows="repeat(2, 1fr)"
+        gap={1}
       >
-        {pokemon.sprites.front_default ? (
-          <Image
-            src={pokemon.sprites.front_default}
-            alt={pokemon.name}
-            width={100}
-            height={100}
-          />
-        ) : null}
-      </GridItem>
-      <GridItem
-        colSpan={6}
-        rowSpan={1}
-        bg="gray.800"
-        borderRadius="5px"
-        textAlign="center"
-      >
-        <Center height="100%">{pokemon.name}</Center>
-      </GridItem>
-      <GridItem
-        colSpan={6}
-        rowSpan={1}
-        bg="gray.800"
-        borderRadius="5px"
-        textAlign="center"
-      ></GridItem>
-      <GridItem
-        colSpan={6}
-        rowSpan={1}
-        bg="gray.800"
-        borderRadius="5px"
-        textAlign="center"
-      ></GridItem>
-      <GridItem
-        colSpan={6}
-        rowSpan={1}
-        bg="gray.800"
-        borderRadius="5px"
-        textAlign="center"
-      ></GridItem>
+        <GridItem colSpan={6} rowSpan={1} bg="gray.800" borderRadius="5px">
+          <Center height="100%">#{pokemon.id}</Center>
+        </GridItem>
+        <GridItem
+          colSpan={6}
+          rowSpan={1}
+          bg="gray.800"
+          borderRadius="5px"
+          textAlign="center"
+        >
+          {pokemon.sprites.front_default ? (
+            <Image
+              src={pokemon.sprites.front_default}
+              alt={pokemon.name}
+              width={100}
+              height={100}
+            />
+          ) : null}
+        </GridItem>
+        <GridItem
+          colSpan={6}
+          rowSpan={1}
+          bg="gray.800"
+          borderRadius="5px"
+          textAlign="center"
+        >
+          <Center height="100%">{pokemon.name}</Center>
+        </GridItem>
+        <GridItem
+          colSpan={6}
+          rowSpan={1}
+          bg="gray.800"
+          borderRadius="5px"
+          textAlign="center"
+        >
+          {pokemon.types.map((type) => type.type.name).join(", ")}
+        </GridItem>
+        <GridItem
+          colSpan={6}
+          rowSpan={1}
+          bg="gray.800"
+          borderRadius="5px"
+          textAlign="center"
+        >
+          {pokemon.abilities.map((ability) => ability.ability.name).join(", ")}
+        </GridItem>
+        <GridItem
+          colSpan={6}
+          rowSpan={1}
+          bg="gray.800"
+          borderRadius="5px"
+          textAlign="center"
+        >
+          {pokemon.stats.map((stat) => stat.base_stat).join(", ")}
+        </GridItem>
+      </Grid>
     </div>
   );
 };
 
 function Home({ pokemon }: InferGetStaticPropsType<typeof getStaticProps>) {
-  console.log(pokemon);
-
   return (
     <div className={styles.container}>
       <Head>
@@ -102,147 +112,146 @@ function Home({ pokemon }: InferGetStaticPropsType<typeof getStaticProps>) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
-        <Box
-          padding="100px"
-          bg="gray.900"
-          width="100vw"
-          color="white"
-          height="100%"
+      <Box
+        padding="100px"
+        bg="gray.900"
+        width="100vw"
+        color="white"
+        height="100vh"
+      >
+        <Grid
+          templateColumns="repeat(36, 1fr)"
+          templateRows="repeat(2, 1fr)"
+          gap={1}
+          paddingBottom="1"
         >
-          <Grid
-            templateColumns="repeat(36, 1fr)"
-            templateRows="repeat(2, 1fr)"
-            gap={1}
+          <GridItem
+            colSpan={6}
+            rowSpan={2}
+            bg="#2b4f01"
+            borderRadius="5px"
+            textAlign="center"
           >
-            <GridItem
-              colSpan={6}
-              rowSpan={2}
-              bg="#2b4f01"
-              borderRadius="5px"
-              textAlign="center"
-            >
-              <Center height="100%">No.</Center>
-            </GridItem>
-            <GridItem
-              colSpan={6}
-              rowSpan={2}
-              bg="#2b4f01"
-              borderRadius="5px"
-              textAlign="center"
-            >
-              <Center height="100%">Pic</Center>
-            </GridItem>
-            <GridItem
-              colSpan={6}
-              rowSpan={2}
-              bg="#2b4f01"
-              borderRadius="5px"
-              textAlign="center"
-            >
-              <Center height="100%">Name</Center>
-            </GridItem>
-            <GridItem
-              colSpan={6}
-              rowSpan={2}
-              bg="#2b4f01"
-              borderRadius="5px"
-              textAlign="center"
-            >
-              <Center height="100%">Type</Center>
-            </GridItem>
-            <GridItem
-              colSpan={6}
-              rowSpan={2}
-              bg="#2b4f01"
-              borderRadius="5px"
-              textAlign="center"
-            >
-              <Center height="100%">Abilities</Center>
-            </GridItem>
-            <GridItem
-              colSpan={6}
-              rowSpan={1}
-              bg="#2b4f01"
-              borderRadius="5px"
-              textAlign="center"
-            >
-              <Center height="100%">Base Stats</Center>
-            </GridItem>
-            <GridItem
-              colSpan={1}
-              rowSpan={1}
-              bg="#2b4f01"
-              borderRadius="5px"
-              textAlign="center"
-            >
-              <Center height="100%">HP</Center>
-            </GridItem>
-            <GridItem
-              colSpan={1}
-              rowSpan={1}
-              bg="#2b4f01"
-              borderRadius="5px"
-              textAlign="center"
-            >
-              <Center height="100%">Att</Center>
-            </GridItem>
-            <GridItem
-              colSpan={1}
-              rowSpan={1}
-              bg="#2b4f01"
-              borderRadius="5px"
-              textAlign="center"
-            >
-              <Center height="100%">Def</Center>
-            </GridItem>
-            <GridItem
-              colSpan={1}
-              rowSpan={1}
-              bg="#2b4f01"
-              borderRadius="5px"
-              textAlign="center"
-            >
-              <Center height="100%">S.Att</Center>
-            </GridItem>
-            <GridItem
-              colSpan={1}
-              rowSpan={1}
-              bg="#2b4f01"
-              borderRadius="5px"
-              textAlign="center"
-            >
-              <Center height="100%">S.Def</Center>
-            </GridItem>
-            <GridItem
-              colSpan={1}
-              rowSpan={1}
-              bg="#2b4f01"
-              borderRadius="5px"
-              textAlign="center"
-            >
-              <Center height="100%">Spd</Center>
-            </GridItem>
+            <Center height="100%">No.</Center>
+          </GridItem>
+          <GridItem
+            colSpan={6}
+            rowSpan={2}
+            bg="#2b4f01"
+            borderRadius="5px"
+            textAlign="center"
+          >
+            <Center height="100%">Pic</Center>
+          </GridItem>
+          <GridItem
+            colSpan={6}
+            rowSpan={2}
+            bg="#2b4f01"
+            borderRadius="5px"
+            textAlign="center"
+          >
+            <Center height="100%">Name</Center>
+          </GridItem>
+          <GridItem
+            colSpan={6}
+            rowSpan={2}
+            bg="#2b4f01"
+            borderRadius="5px"
+            textAlign="center"
+          >
+            <Center height="100%">Type</Center>
+          </GridItem>
+          <GridItem
+            colSpan={6}
+            rowSpan={2}
+            bg="#2b4f01"
+            borderRadius="5px"
+            textAlign="center"
+          >
+            <Center height="100%">Abilities</Center>
+          </GridItem>
+          <GridItem
+            colSpan={6}
+            rowSpan={1}
+            bg="#2b4f01"
+            borderRadius="5px"
+            textAlign="center"
+          >
+            <Center height="100%">Base Stats</Center>
+          </GridItem>
+          <GridItem
+            colSpan={1}
+            rowSpan={1}
+            bg="#2b4f01"
+            borderRadius="5px"
+            textAlign="center"
+          >
+            <Center height="100%">HP</Center>
+          </GridItem>
+          <GridItem
+            colSpan={1}
+            rowSpan={1}
+            bg="#2b4f01"
+            borderRadius="5px"
+            textAlign="center"
+          >
+            <Center height="100%">Att</Center>
+          </GridItem>
+          <GridItem
+            colSpan={1}
+            rowSpan={1}
+            bg="#2b4f01"
+            borderRadius="5px"
+            textAlign="center"
+          >
+            <Center height="100%">Def</Center>
+          </GridItem>
+          <GridItem
+            colSpan={1}
+            rowSpan={1}
+            bg="#2b4f01"
+            borderRadius="5px"
+            textAlign="center"
+          >
+            <Center height="100%">S.Att</Center>
+          </GridItem>
+          <GridItem
+            colSpan={1}
+            rowSpan={1}
+            bg="#2b4f01"
+            borderRadius="5px"
+            textAlign="center"
+          >
+            <Center height="100%">S.Def</Center>
+          </GridItem>
+          <GridItem
+            colSpan={1}
+            rowSpan={1}
+            bg="#2b4f01"
+            borderRadius="5px"
+            textAlign="center"
+          >
+            <Center height="100%">Spd</Center>
+          </GridItem>
+        </Grid>
 
-            <AutoSizer>
-              {({ height, width }) => (
-                <FixedSizeList
-                  className="list"
-                  width={width}
-                  height={height}
-                  itemCount={pokemon.length}
-                  itemData={pokemon}
-                  itemSize={100}
-                >
-                  {({ style, data, index }) => (
-                    <PokemonRow style={style} data={data} index={index} />
-                  )}
-                </FixedSizeList>
+        <AutoSizer>
+          {({ height, width }) => (
+            <FixedSizeList
+              className="list"
+              width={width}
+              height={height}
+              itemCount={pokemon.length}
+              itemData={pokemon}
+              itemSize={100}
+            >
+              {({ style, data, index }) => (
+                <PokemonRow style={style} data={data} index={index} />
               )}
-            </AutoSizer>
-          </Grid>
-        </Box>
-      </main>
+            </FixedSizeList>
+          )}
+        </AutoSizer>
+      </Box>
     </div>
   );
 }
