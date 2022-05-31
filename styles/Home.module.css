@@ -1,23 +1,8 @@
-.container {
-  padding: 0 2rem;
-}
-
 .main {
   min-height: 100vh;
-  padding: 4rem 0;
+  height: 100vh;
 }
 
 .list {
-  border: 1px solid #d9dddd;
-}
-
-.listItemEven,
-.listItemOdd {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.listItemEven {
-  background-color: #f8f8f0;
+  height: 100%;
 }
