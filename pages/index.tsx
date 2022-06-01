@@ -1,22 +1,50 @@
 import type { InferGetStaticPropsType } from "next";
-import type { Pokemon } from "pokenode-ts";
 import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
-import { client } from "../util/pokemon-client";
 import { FixedSizeList } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
-import { Box, Center, Grid, GridItem, Text } from "@chakra-ui/react";
-// import backupPokemon from "../data/pokemon.json";
+import { Box, Center, Grid, GridItem } from "@chakra-ui/react";
+import pokemonData from "../data/pokemon.json";
+
+const typeBadgeMap = new Map<string, string>([
+  ["normal", "https://img.shields.io/badge/Normal-A8A878?style=for-the-badge"],
+  ["fire", "https://img.shields.io/badge/Fire-F08030?style=for-the-badge"],
+  [
+    "fighting",
+    "https://img.shields.io/badge/Fighting-C03028?style=for-the-badge",
+  ],
+  ["water", "https://img.shields.io/badge/Water-6890F0?style=for-the-badge"],
+  ["flying", "https://img.shields.io/badge/Flying-A890F0?style=for-the-badge"],
+  ["grass", "https://img.shields.io/badge/Grass-78C850?style=for-the-badge"],
+  ["poison", "https://img.shields.io/badge/Poison-A040A0?style=for-the-badge"],
+  [
+    "electric",
+    "https://img.shields.io/badge/Electric-F8D030?style=for-the-badge",
+  ],
+  ["ground", "https://img.shields.io/badge/Ground-E0C068?style=for-the-badge"],
+  [
+    "psychic",
+    "https://img.shields.io/badge/Psychic-E0C068?style=for-the-badge",
+  ],
+  ["rock", "https://img.shields.io/badge/Rock-B8A038?style=for-the-badge"],
+  ["ice", "https://img.shields.io/badge/Ice-98D8D8?style=for-the-badge"],
+  ["bug", "https://img.shields.io/badge/Bug-A8B820?style=for-the-badge"],
+  ["dragon", "https://img.shields.io/badge/Dragon-7038F8?style=for-the-badge"],
+  ["ghost", "https://img.shields.io/badge/Ghost-705898?style=for-the-badge"],
+  ["dark", "https://img.shields.io/badge/Dark-705848?style=for-the-badge"],
+  ["steel", "https://img.shields.io/badge/Steel-B8B8D0?style=for-the-badge"],
+  ["fairy", "https://img.shields.io/badge/Fairy-EE99AC?style=for-the-badge"],
+  [
+    "unknown",
+    "https://img.shields.io/badge/Unknown-68A090?style=for-the-badge",
+  ],
+]);
+
+const capitalise = (str: string) => str[0].toUpperCase() + str.slice(1);
 
 export const getStaticProps = async () => {
-  const fetchAllPokemon = Array.from({ length: 151 }).map((_, idx) =>
-    client.getPokemonById(idx + 1)
-  );
-
-  const pokemon = await Promise.all(fetchAllPokemon);
-
-  // const pokemon = (backupPokemon as any).data;
+  const pokemon = (pokemonData as any).data;
 
   return {
     props: {
@@ -32,19 +60,21 @@ const PokemonRow = ({
 }: {
   index: number;
   style: any;
-  data: Pokemon[];
+  data: any[];
 }) => {
+  if (!data || !data.length) return null;
+
   const pokemon = data[index];
 
   return (
     <div style={{ ...style, height: "100%" }} className={styles.list}>
       <Grid
-        templateColumns="repeat(36, 1fr)"
+        templateColumns="repeat(30, 1fr)"
         templateRows="repeat(2, 1fr)"
         gap={1}
       >
         <GridItem colSpan={6} rowSpan={1} bg="gray.800" borderRadius="5px">
-          <Center height="100%">#{pokemon.id}</Center>
+          <Center height="100%">#{String(pokemon.id).padStart(3, "0")}</Center>
         </GridItem>
         <GridItem
           colSpan={6}
@@ -53,14 +83,12 @@ const PokemonRow = ({
           borderRadius="5px"
           textAlign="center"
         >
-          {pokemon.sprites.front_default ? (
-            <Image
-              src={pokemon.sprites.front_default}
-              alt={pokemon.name}
-              width={100}
-              height={100}
-            />
-          ) : null}
+          <Image
+            src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`}
+            alt={pokemon.name}
+            width={100}
+            height={100}
+          />
         </GridItem>
         <GridItem
           colSpan={6}
@@ -69,7 +97,9 @@ const PokemonRow = ({
           borderRadius="5px"
           textAlign="center"
         >
-          <Center height="100%">{pokemon.name}</Center>
+          <Center height="100%">
+            <h2>{capitalise(pokemon.name)}</h2>
+          </Center>
         </GridItem>
         <GridItem
           colSpan={6}
@@ -78,7 +108,23 @@ const PokemonRow = ({
           borderRadius="5px"
           textAlign="center"
         >
-          {pokemon.types.map((type) => type.type.name).join(", ")}
+          <Center height="100%">
+            <Grid
+              templateColumns={`repeat(${pokemon.types.length}, 1fr)`}
+              gap="1"
+            >
+              {pokemon.types.map((type: string) => (
+                <GridItem key={type}>
+                  <Image
+                    src={typeBadgeMap.get(type) || typeBadgeMap.get("unknown")!}
+                    alt={`Type of ${pokemon.type}`}
+                    width={50}
+                    height={28}
+                  />
+                </GridItem>
+              ))}
+            </Grid>
+          </Center>
         </GridItem>
         <GridItem
           colSpan={6}
@@ -87,16 +133,12 @@ const PokemonRow = ({
           borderRadius="5px"
           textAlign="center"
         >
-          {pokemon.abilities.map((ability) => ability.ability.name).join(", ")}
-        </GridItem>
-        <GridItem
-          colSpan={6}
-          rowSpan={1}
-          bg="gray.800"
-          borderRadius="5px"
-          textAlign="center"
-        >
-          {pokemon.stats.map((stat) => stat.base_stat).join(", ")}
+          <Center height="100%">
+            {pokemon.abilities
+              .map((str: string) => str.split("-").join(" "))
+              .map((str: string) => capitalise(str))
+              .join(", ")}
+          </Center>
         </GridItem>
       </Grid>
     </div>
@@ -141,7 +183,7 @@ function Home({ pokemon }: InferGetStaticPropsType<typeof getStaticProps>) {
             borderRadius="5px"
             textAlign="center"
           >
-            <Center height="100%">Pic</Center>
+            <Center height="100%">Image</Center>
           </GridItem>
           <GridItem
             colSpan={6}
@@ -159,7 +201,7 @@ function Home({ pokemon }: InferGetStaticPropsType<typeof getStaticProps>) {
             borderRadius="5px"
             textAlign="center"
           >
-            <Center height="100%">Type</Center>
+            <Center height="100%">Types</Center>
           </GridItem>
           <GridItem
             colSpan={6}
@@ -169,69 +211,6 @@ function Home({ pokemon }: InferGetStaticPropsType<typeof getStaticProps>) {
             textAlign="center"
           >
             <Center height="100%">Abilities</Center>
-          </GridItem>
-          <GridItem
-            colSpan={6}
-            rowSpan={1}
-            bg="#2b4f01"
-            borderRadius="5px"
-            textAlign="center"
-          >
-            <Center height="100%">Base Stats</Center>
-          </GridItem>
-          <GridItem
-            colSpan={1}
-            rowSpan={1}
-            bg="#2b4f01"
-            borderRadius="5px"
-            textAlign="center"
-          >
-            <Center height="100%">HP</Center>
-          </GridItem>
-          <GridItem
-            colSpan={1}
-            rowSpan={1}
-            bg="#2b4f01"
-            borderRadius="5px"
-            textAlign="center"
-          >
-            <Center height="100%">Att</Center>
-          </GridItem>
-          <GridItem
-            colSpan={1}
-            rowSpan={1}
-            bg="#2b4f01"
-            borderRadius="5px"
-            textAlign="center"
-          >
-            <Center height="100%">Def</Center>
-          </GridItem>
-          <GridItem
-            colSpan={1}
-            rowSpan={1}
-            bg="#2b4f01"
-            borderRadius="5px"
-            textAlign="center"
-          >
-            <Center height="100%">S.Att</Center>
-          </GridItem>
-          <GridItem
-            colSpan={1}
-            rowSpan={1}
-            bg="#2b4f01"
-            borderRadius="5px"
-            textAlign="center"
-          >
-            <Center height="100%">S.Def</Center>
-          </GridItem>
-          <GridItem
-            colSpan={1}
-            rowSpan={1}
-            bg="#2b4f01"
-            borderRadius="5px"
-            textAlign="center"
-          >
-            <Center height="100%">Spd</Center>
           </GridItem>
         </Grid>
 
